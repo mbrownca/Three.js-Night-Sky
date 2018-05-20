@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <title>MidnightVR | Virtual Reality Experiences</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+      <style>
+         body {
+         margin: 0px;
+         }
+         .container {
+         position: fixed;
+         width: 100%;
+         }
+         #sky {
+         /*background: -webkit-linear-gradient(#00111e 30%, #033d5e);
+         background: -moz-linear-gradient(#00111e 30%, #033d5e);
+         background: -o-linear-gradient(#00111e 30%, #033d5e);
+         background: linear-gradient(#00111e 30%, #033d5e);*/
+         background: -moz-linear-gradient(top, rgba(0,0,0,1) 0%, rgba(4,18,24,1) 50%, rgba(75,61,78,1) 100%);
+         background: -webkit-linear-gradient(top, rgba(0,0,0,1) 0%, rgba(4,18,24,1) 50%, rgba(75,61,78,1) 100%);
+         background: -o-linear-gradient(top, rgba(0,0,0,1) 0%, rgba(4,18,24,1) 50%, rgba(75,61,78,1) 100%);
+         background: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(4,18,24,1) 50%, rgba(75,61,78,1) 100%);/* overflow: hidden;*/
+         }
+     
+      </style>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/92/three.min.js"></script>
+   </head>
+   <body id="sky"  >
+      <div class="container">
+       
+      <script>
+         var container ;
+         var camera, scene, renderer, particles, geometry, material,  sprite, size;
+         var mouseX = 0, mouseY = 0;
+         
+         var windowHalfX = window.innerWidth /2 ;
+         var windowHalfY = window.innerHeight  /2;
+         this.maxAzimuthAngle = 10; 
+         init();
+         animate();
+         
+         
+         function init() {
+         
+         	container = document.createElement( 'div' );
+         	document.body.appendChild( container );
+         
+         	camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 3000 );
+         	camera.position.z = 1400;
+         
+         	scene = new THREE.Scene();
+         	scene.fog = new THREE.FogExp2( 0x8CB4D3, 0.0004 );
+         
+         
+         
+         	
+         	var geometry = new THREE.Geometry();
+        		THREE.ImageUtils.crossOrigin = 'anonymous';
+         
+         	var sprite = new THREE.TextureLoader().load('https://s3-us-west-1.amazonaws.com/midnightvr/gold.png');
+         
+         	for ( i = 0; i < 1000; i ++ ) {
+         
+         		var vertex = new THREE.Vector3();
+         		vertex.x = 2000 * Math.random() - 1000;
+         		vertex.y = 2000 * Math.random() - 1000;
+         		vertex.z = 2000 * Math.random() - 1000;
+         
+         		geometry.vertices.push( vertex );
+         	}
+         
+         var material = new THREE.PointsMaterial( {  size: 13, map: sprite, transparent:true
+         	 } );
+         	
+         	var particles = new THREE.Points( geometry, material );
+         	scene.add( particles );
+         
+         	var geometry2 = new THREE.Geometry();
+         
+         	var sprite2 = new THREE.TextureLoader().load( "https://s3-us-west-1.amazonaws.com/midnightvr/cloud10.png" );
+    
+         
+         
+         	for ( i = 0; i < 900; i ++ ) {
+         
+         		var vertex2 = new THREE.Vector3();
+         		vertex2.x = Math.random() * 4000 - 500;
+         		vertex2.y = - Math.random() * Math.random() * 400 - 15;
+         		vertex2.z = i;
+         	
+         
+         		geometry2.vertices.push( vertex2 );
+         
+         
+         	}
+          	var material2 = new THREE.PointsMaterial( {  size: 400, map: sprite2, 	depthWrite: false,
+          			depthTest: false,
+         		transparent: true, opacity:.2
+
+          } );
+         	
+         var particles2 = new THREE.Points( geometry2, material2 );
+         	 particles2.position.set(-800,-270,0);
+          scene.add( particles2 );
+         	
+         	renderer = new THREE.WebGLRenderer({ alpha: true });
+         	renderer.setPixelRatio( window.devicePixelRatio );
+         	renderer.setSize( window.innerWidth, window.innerHeight );
+         	container.appendChild( renderer.domElement );
+         
+         	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+         	document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+         	document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+         
+         	window.addEventListener( 'resize', onWindowResize, false );
+         
+         }
+         
+         
+         function onDocumentMouseMove( event ) {
+         
+         
+         mouseX = ( event.clientX - windowHalfX ) / 10;
+         	mouseY = ( event.clientY - windowHalfY ) / 10;
+         }
+         
+         function onDocumentTouchStart( event ) {
+         
+         	if ( event.touches.length === 1 ) {
+         
+         		event.preventDefault();
+         
+         		mouseX = event.touches[ 0 ].pageX - windowHalfX;
+         		mouseY = event.touches[ 0 ].pageY - windowHalfY;
+         
+         	}
+         
+         }
+         
+         function onDocumentTouchMove( event ) {
+         
+         	if ( event.touches.length === 1 ) {
+         
+         		event.preventDefault();
+         
+         		mouseX = event.touches[ 0 ].pageX - windowHalfX;
+         		mouseY = event.touches[ 0 ].pageY - windowHalfY;
+         
+         	}
+         
+         }
+         
+         function onWindowResize( event ) {
+         
+         	windowHalfX = window.innerWidth / 2;
+         	windowHalfY = window.innerHeight / 2;
+         
+         	camera.aspect = window.innerWidth / window.innerHeight;
+         	camera.updateProjectionMatrix();
+         
+         	renderer.setSize( window.innerWidth, window.innerHeight );
+         
+         }
+         
+         //
+         
+         function animate() {
+         
+         	requestAnimationFrame( animate );
+         
+         	render();
+         
+         
+         }
+         
+         function render() {
+         
+         	var time = Date.now() * 0.00005;
+         
+         	camera.position.x += ( mouseX - camera.position.x ) * 0.05;
+         	camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
+         
+         	camera.lookAt( scene.position );
+         
+         	
+         	
+         	renderer.render( scene, camera );
+         
+         }
+         
+      </script>
+   </body>
+</html>
